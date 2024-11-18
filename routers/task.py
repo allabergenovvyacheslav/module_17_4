@@ -42,12 +42,7 @@ router = APIRouter(prefix='/task', tags=['task'])
 
 @router.get('/')
 async def all_tasks(db: Annotated[Session, Depends(get_db)]):
-    tasks = db.scalar(select(Task)).all()
-    if tasks is None:
-        return HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail='There are no tasks'
-        )
+    tasks = db.scalars(select(Task)).all()
     return tasks
 
 
@@ -62,7 +57,7 @@ async def task_by_id(db: Annotated[Session, Depends(get_db)], task_id: int):
 
 @router.post('/create')
 async def create_task(db: Annotated[Session, Depends(get_db)], create_task_models: CreateTask, user_id: int):
-    user = db.scalars(select(User).where(User.id == user_id))
+    user = db.scalar(select(User).where(User.id == user_id))
     if user is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -78,7 +73,7 @@ async def create_task(db: Annotated[Session, Depends(get_db)], create_task_model
 
 @router.put('/update')
 async def update_task(db: Annotated[Session, Depends(get_db)], task_id: int, update_task_models: UpdateTask):
-    task_update = db.scalars(select(Task).where(Task.id == task_id))
+    task_update = db.scalar(select(Task).where(Task.id == task_id))
     if task_update is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -94,7 +89,7 @@ async def update_task(db: Annotated[Session, Depends(get_db)], task_id: int, upd
 
 @router.delete('/delete')
 async def delete_task(db: Annotated[Session, Depends(get_db)], task_id: int):
-    task_delete = db.scalars(select(Task).where(Task.id == task_id))
+    task_delete = db.scalar(select(Task).where(Task.id == task_id))
     if task_delete is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -102,4 +97,4 @@ async def delete_task(db: Annotated[Session, Depends(get_db)], task_id: int):
         )
     db.execute(delete(Task).where(Task.id == task_id))
     db.commit()
-    return {'status_code': status.HTTP_200_OK, 'transaction': 'User delete is successful!'}
+    return {'status_code': status.HTTP_200_OK, 'transaction': 'Task delete is successful!'}
