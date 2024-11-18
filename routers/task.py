@@ -42,7 +42,7 @@ router = APIRouter(prefix='/task', tags=['task'])
 
 @router.get('/')
 async def all_tasks(db: Annotated[Session, Depends(get_db)]):
-    tasks = db.scalar(select(Task)).all()
+    tasks = db.scalars(select(Task)).all()
     if tasks is None:
         return HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -53,7 +53,7 @@ async def all_tasks(db: Annotated[Session, Depends(get_db)]):
 
 @router.get('/task_id')
 async def task_by_id(db: Annotated[Session, Depends(get_db)], task_id: int):
-    task = db.scalar(select(Task).where(Task.id == task_id))
+    task = db.scalars(select(Task).where(Task.id == task_id))
     if task is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail='Task was not found')
